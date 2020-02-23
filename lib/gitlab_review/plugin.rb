@@ -7,16 +7,14 @@ module Danger
     end
 
     def random_select(branch_name, reviewers, max_reviewers)
-      randgen = roulette.new_random(branch_name)
-      result = []
-      max_reviewers.times do 
-        result << reviewers[randgen(reviewers.length)]
-      end
-      result
+      reviewers.shuffle(random: new_random(branch_name)).take(max_reviewers)
     end
 
     def random(max_reviewers = 2, user_reviewers = [], user_blacklist = [])
-      user_blacklist << gitlab.mr_author
+      if defined? gitlab.mr_author
+        user_blacklist << gitlab.mr_author
+      end
+      
       possible_reviewers = user_reviewers.select { |k, _| !user_blacklist.include? k }
       reviewers = random_select(gitlab.mr_json['source_branch'], possible_reviewers, max_reviewers)
 

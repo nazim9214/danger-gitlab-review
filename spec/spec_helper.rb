@@ -54,20 +54,23 @@ def testing_env
     "TRAVIS_PULL_REQUEST" => "800",
     "TRAVIS_REPO_SLUG" => "artsy/eigen",
     "TRAVIS_COMMIT_RANGE" => "759adcbd0d8f...13c4dc8bb61d",
-    "DANGER_GITLAB_API_TOKEN" => "123sbdq54erfsd3422gdfio"
+    "DANGER_GITLAB_API_TOKEN" => "123sbdq54erfsd3422gdfio",
+    "DANGER_GITHUB_API_TOKEN" => "123sbdq54erfsd3422gdfio"
   }
 end
 
-stub_env = {
-  "DRONE" => true,
-  "DRONE_REPO" => "fsfafs/test",
-  "DRONE_PULL_REQUEST" => "593728",
-  "DANGER_GITLAB_API_TOKEN" => "a86e56d46ac78b"
-}
+def stub_env 
+  {
+    "DRONE" => true,
+    "DRONE_REPO" => "fsfafs/test",
+    "DRONE_PULL_REQUEST" => "593728",
+    "DANGER_GITLAB_API_TOKEN" => "a86e56d46ac78b"
+  }
+end
 
 # A stubbed out Dangerfile for use in tests
 def testing_dangerfile
   env = Danger::EnvironmentManager.new(testing_env)
   env.request_source = Danger::RequestSources::GitLab.new(Danger::Drone.new(stub_env), testing_env)
-  Danger::Dangerfile.new(env)
+  Danger::Dangerfile.new(env, testing_ui)
 end

@@ -13,8 +13,18 @@ module Danger
       before do
         @dangerfile = testing_dangerfile
         @my_plugin = @dangerfile.gitlab_review
-        allow(@my_plugin.gitlab.mr_author).return('testuser')
+        json = File.read(File.dirname(__FILE__) + '/support/fixtures/gitlab_mr.json')
+        allow(@my_plugin.gitlab).to receive(:mr_json).and_return(json)
       end
+
+      it "select random reviewer" do
+        @my_plugin.random(2, [ 'user1', 'user2' ])
+        output = @my_plugin.status_report[:markdowns].first.message
+        expect(output).to_not be_empty
+        expect(output).to include('@user1')
+        expect(output).to include('@user2')
+      end
+
     end
   end
 end
