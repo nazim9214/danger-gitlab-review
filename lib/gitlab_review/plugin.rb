@@ -1,33 +1,19 @@
 module Danger
-  # This is your plugin class. Any attributes or methods you expose here will
-  # be available from within your Dangerfile.
-  #
-  # To be published on the Danger plugins site, you will need to have
-  # the public interface documented. Danger uses [YARD](http://yardoc.org/)
-  # for generating documentation from your plugin source, and you can verify
-  # by running `danger plugins lint` or `bundle exec rake spec`.
-  #
-  # You should replace these comments with a public description of your library.
-  #
-  # @example Ensure people are well warned about merging on Mondays
-  #
-  #          my_plugin.warn_on_mondays
-  #
-  # @see  /danger-gitlab_review
-  # @tags monday, weekends, time, rattata
-  #
   class DangerGitlabReview < Plugin
-
-    # An attribute that you can read/write from your Dangerfile
-    #
-    # @return   [Array<String>]
     attr_accessor :my_attribute
 
-    # A method that you can call from your Dangerfile
-    # @return   [Array<String>]
-    #
-    def warn_on_mondays
-      warn 'Trying to merge code on a Monday' if Date.today.wday == 1
+    def random(max_reviewers = 2, user_reviewers = [], user_blacklist = [])
+      user_blacklist << gitlab.mr_author
+      reviewers = user_reviewers.select { |k, _| !user_blacklist.include? k }.sample(max_reviewers)
+
+      if reviewers.count > 0
+        reviewers = reviewers.map { |r| '@' + r }
+        
+        result = format('We identified %s to be reviewer%s.',
+                        reviewers.join(', '), reviewers.count > 1 ? 's' : '')
+        
+        markdown result
+      end
     end
   end
 end

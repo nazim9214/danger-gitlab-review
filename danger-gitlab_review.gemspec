@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = GitlabReview::VERSION
   spec.authors       = ['']
   spec.email         = ['']
-  spec.description   = %q{A short description of danger-gitlab_review.}
-  spec.summary       = %q{A longer description of danger-gitlab_review.}
+  spec.description   = %q{Randomly select reviewers for Gitlab MR}
+  spec.summary       = %q{Randomly select reviewers for Gitlab MR.}
   spec.homepage      = 'https://github.com//danger-gitlab_review'
   spec.license       = 'MIT'
 
@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'danger-plugin-api', '~> 1.0'
 
   # General ruby development
-  spec.add_development_dependency 'bundler', '~> 1.3'
+  spec.add_development_dependency 'bundler', '~> 2.1'
   spec.add_development_dependency 'rake', '~> 10.0'
 
   # Testing support
