@@ -10,7 +10,7 @@ module Danger
       reviewers.shuffle(random: new_random(branch_name)).take(max_reviewers)
     end
 
-    def random(max_reviewers = 2, user_reviewers = [], user_blacklist = [])
+    def random(max_reviewers = 2, user_reviewers = [], user_blacklist = [], label = nil)
       if defined? gitlab.mr_author
         user_blacklist << gitlab.mr_author
       end
@@ -21,6 +21,11 @@ module Danger
       if reviewers.count > 0
         reviewers = reviewers.map { |r| '@' + r }
         result = format('Suggested reviewer%s: %s', reviewers.count > 1 ? 's' : '', reviewers.join(', '))
+
+        if label
+          result = format('[ %s ] %s', label, result)
+        end
+
         markdown result
       end
     end
