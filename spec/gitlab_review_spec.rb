@@ -1,3 +1,4 @@
+require 'json'
 require File.expand_path("../spec_helper", __FILE__)
 
 module Danger
@@ -14,15 +15,18 @@ module Danger
         @dangerfile = testing_dangerfile
         @my_plugin = @dangerfile.gitlab_review
         json = File.read(File.dirname(__FILE__) + '/support/fixtures/gitlab_mr.json')
-        allow(@my_plugin.gitlab).to receive(:mr_json).and_return(json)
+        allow(@my_plugin.gitlab).to receive(:mr_json).and_return(JSON.parse(json))
+        allow(@my_plugin.gitlab).to receive(:mr_author).and_return('user3')
       end
 
       it "select random reviewer" do
-        @my_plugin.random(2, [ 'user1', 'user2' ])
+        @my_plugin.random(3, [ 'user1', 'user2', 'user3' ], [], 'testlabel')
         output = @my_plugin.status_report[:markdowns].first.message
         expect(output).to_not be_empty
+        expect(output).to include('testlabel')
         expect(output).to include('@user1')
         expect(output).to include('@user2')
+        expect(output).not_to include('@user3')
       end
 
     end

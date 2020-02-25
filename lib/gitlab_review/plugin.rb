@@ -11,10 +11,9 @@ module Danger
     end
 
     def random(max_reviewers = 2, user_reviewers = [], user_blacklist = [], label = nil)
-      if defined? gitlab.mr_author
-        user_blacklist << gitlab.mr_author
-      end
       
+      user_blacklist << gitlab.mr_author
+
       possible_reviewers = user_reviewers.select { |k, _| !user_blacklist.include? k }
       reviewers = random_select(gitlab.mr_json['source_branch'], possible_reviewers, max_reviewers)
 
