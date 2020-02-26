@@ -20,12 +20,13 @@ module Danger
       end
 
       it "select random reviewer" do
-        @my_plugin.random(3, [ 'user1', 'user2', 'user3' ], [], 'testlabel')
+        @my_plugin.random(3, [ 'user1', 'user2', 'user3' ], [ 'user1', 'user2', 'user3', 'user4' ], [], 'testlabel')
         output = @my_plugin.status_report[:markdowns].first.message
         expect(output).to_not be_empty
         expect(output).to include('testlabel')
         expect(output).to include('@user1')
         expect(output).to include('@user2')
+        expect(output).to include('@user4')
         expect(output).not_to include('@user3')
       end
 

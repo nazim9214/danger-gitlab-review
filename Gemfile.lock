@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    danger-gitlab_review (0.0.4)
+    danger-gitlab_review (0.0.5)
       danger-plugin-api (~> 1.0)
 
 GEM
