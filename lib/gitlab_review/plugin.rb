@@ -6,16 +6,27 @@ module Danger
       Random.new(Digest::MD5.hexdigest(seed).to_i(16))
     end
 
-    def random_select(branch_name, reviewers, blacklist, max_reviewers)
+    def random_select(review_id, reviewers, blacklist, max_reviewers)
       possible_reviewers = reviewers.select { |k, _| !blacklist.include? k }
-      possible_reviewers.shuffle(random: new_random(branch_name)).take(max_reviewers)
+      possible_reviewers.shuffle(random: new_random(review_id)).take(max_reviewers)
     end
 
     def random(max_reviewers = 2, maintainers = [], user_reviewers = [], user_blacklist = [], label = nil, maintainers_reviewers_count = 1)
+
+      if gitlab.mr_title.include? "#no_roulette"
+        return
+      end
+
+      review_id = gitlab.mr_json['source_branch']
+      review_seed = gitlab.mr_title.scan(/#roulette\d{1,9}/).last
+      if review_seed
+        review_id += review_seed
+      end
+
       user_blacklist << gitlab.mr_author
-      maintainer_reviewers = random_select(gitlab.mr_json['source_branch'], maintainers, user_blacklist, maintainers_reviewers_count)
+      maintainer_reviewers = random_select(review_id, maintainers, user_blacklist, maintainers_reviewers_count)
       user_blacklist.concat maintainer_reviewers
-      reviewers = (maintainer_reviewers.concat random_select(gitlab.mr_json['source_branch'], user_reviewers, user_blacklist, max_reviewers)).take(max_reviewers)
+      reviewers = (maintainer_reviewers.concat random_select(review_id, user_reviewers, user_blacklist, max_reviewers)).take(max_reviewers)
 
       if reviewers.count > 0
         reviewers = reviewers.map { |r| '@' + r }
