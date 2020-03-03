@@ -6,9 +6,9 @@ module Danger
       Random.new(Digest::MD5.hexdigest(seed).to_i(16))
     end
 
-    def random_select(review_id, reviewers, blacklist, max_reviewers)
+    def random_select(rng, review_id, reviewers, blacklist, max_reviewers)
       possible_reviewers = reviewers.select { |k, _| !blacklist.include? k }
-      possible_reviewers.shuffle(random: new_random(review_id)).take(max_reviewers)
+      possible_reviewers.sample(max_reviewers, random: rng)
     end
 
     def random(max_reviewers = 2, maintainers = [], user_reviewers = [], user_blacklist = [], label = nil, maintainers_reviewers_count = 1)
@@ -23,10 +23,11 @@ module Danger
         review_id += review_seed
       end
 
+      rng = new_random(review_id)
       user_blacklist << gitlab.mr_author
-      maintainer_reviewers = random_select(review_id, maintainers, user_blacklist, maintainers_reviewers_count)
+      maintainer_reviewers = random_select(rng, review_id, maintainers, user_blacklist, maintainers_reviewers_count)
       user_blacklist.concat maintainer_reviewers
-      reviewers = (maintainer_reviewers.concat random_select(review_id, user_reviewers, user_blacklist, max_reviewers)).take(max_reviewers)
+      reviewers = (maintainer_reviewers.concat random_select(rng, review_id, user_reviewers, user_blacklist, max_reviewers)).take(max_reviewers)
 
       if reviewers.count > 0
         reviewers = reviewers.map { |r| '@' + r }
@@ -38,6 +39,7 @@ module Danger
 
         markdown result
       end
+
     end
   end
 end
