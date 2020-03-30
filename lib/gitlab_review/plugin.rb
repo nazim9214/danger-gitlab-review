@@ -17,7 +17,7 @@ module Danger
         return
       end
 
-      review_id = gitlab.mr_json['source_branch']
+      review_id = gitlab.mr_json['project_id'].to_s + gitlab.mr_json['iid'].to_s
       review_seed = gitlab.mr_title.scan(/#roulette\d{1,9}/).last
       if review_seed
         review_id += review_seed
